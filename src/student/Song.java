@@ -16,15 +16,23 @@ import java.util.*;
  * @author boothe
  */
 public class Song implements Comparable<Song> {
+
     // fields
+    private String artist;
+    private String title;
+    private String lyrics;
 
     /**
      * Parameterized constructor
+     *
      * @param artist the author of the song
      * @param title the title of the song
      * @param lyrics the lyrics as a string with linefeeds embedded
      */
     public Song(String artist, String title, String lyrics) {
+        this.artist = artist;
+        this.title = title;
+        this.lyrics = lyrics;
     }
 
     /**
@@ -32,6 +40,7 @@ public class Song implements Comparable<Song> {
      * @return
      */
     public String getArtist() {
+        return artist;
     }
 
     /**
@@ -39,6 +48,7 @@ public class Song implements Comparable<Song> {
      * @return
      */
     public String getLyrics() {
+        return lyrics;
     }
 
     /**
@@ -46,33 +56,38 @@ public class Song implements Comparable<Song> {
      * @return
      */
     public String getTitle() {
+        return title;
     }
 
     /**
      * returns name and title ONLY
+     *
      * @return
      */
+    @Override
     public String toString() {
+        return this.artist + ", \"" + this.title + "\"";
     }
 
     /**
-     * the default comparison of songs
-     * primary key: artist, secondary key: title
-     * used for sorting and searching the song array
-     * if two songs have the same artist and title they are considered the same
+     * the default comparison of songs primary key: artist, secondary key: title
+     * used for sorting and searching the song array if two songs have the same
+     * artist and title they are considered the same
+     *
      * @param song2
-     * @return a negative number, positive number or 0 depending on whether 
-     *    this song should be  before, after or is the same.  Used for a
-     *    "natural" sorting order.  In this case first by author then by 
-     *    title so that the all of an artist's songs are together, 
-     *    but in alpha order.  Follow the given example.
+     * @return a negative number, positive number or 0 depending on whether this
+     * song should be before, after or is the same. Used for a "natural" sorting
+     * order. In this case first by author then by title so that the all of an
+     * artist's songs are together, but in alpha order. Follow the given
+     * example.
      */
     public int compareTo(Song song2) {
+        return this.toString().compareToIgnoreCase(song2.toString());
     }
 
- \
     /**
      * testing method to unit test this class
+     *
      * @param args
      */
     public static void main(String[] args) {
