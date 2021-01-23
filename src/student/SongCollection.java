@@ -73,23 +73,22 @@ public class SongCollection {
                 title = title.substring(title.indexOf("\"") + 1,
                         title.lastIndexOf("\""));
             }
-            // ERROR HERE WITH LYRICS
             if (lyrics.startsWith("LYRICS")) {
-                str.append(lyrics);
+                str.append(lyrics).append("\n");
                 while (moreLyrics) {
                     nextLine = inputFile.nextLine();
-                    if (nextLine.equals("\"")) {
+                    if (nextLine.startsWith("\"")) {
+                        str.append(nextLine);
                         moreLyrics = false;
                     } else {
-                        str.append(inputFile.nextLine()).append("\n");
+                        str.append(nextLine).append("\n");
                     }
                 }
                 lyrics = str.toString();
-                lyrics = lyrics.substring(lyrics.indexOf("'"),
-                        lyrics.lastIndexOf("'"));
+                lyrics = lyrics.substring(lyrics.indexOf("\""),
+                        lyrics.lastIndexOf("\"") + 1) ;
 
             }
-
             Song song = new Song(artist, title, lyrics);
             songList.add(song);
         }
@@ -122,6 +121,7 @@ public class SongCollection {
         SongCollection sc = new SongCollection(args[0]);
 
         // todo: show song count 
+        System.out.println(sc.songs.length);
         Stream.of(sc).limit(10).forEach(System.out::println);
     }
 }
