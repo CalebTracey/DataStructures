@@ -2,6 +2,7 @@ package student;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.stream.Stream;
@@ -86,7 +87,7 @@ public class SongCollection {
                 }
                 lyrics = str.toString();
                 lyrics = lyrics.substring(lyrics.indexOf("\""),
-                        lyrics.lastIndexOf("\"") + 1) ;
+                        lyrics.lastIndexOf("\"") + 1);
 
             }
             Song song = new Song(artist, title, lyrics);
@@ -96,6 +97,8 @@ public class SongCollection {
         songList.toArray(songs);
 
         // sort the songs array using Array.sort (see the Java API)
+        Arrays.sort(songs);
+
     }
 
     /**

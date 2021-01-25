@@ -82,7 +82,32 @@ public class Song implements Comparable<Song> {
      * example.
      */
     public int compareTo(Song song2) {
-        return this.toString().compareToIgnoreCase(song2.toString());
+        int artistVal = this.artist.compareToIgnoreCase(song2.getArtist());
+        int titleVal = this.title.compareToIgnoreCase(song2.getTitle());
+        final int BEFORE = -1;
+        final int EQUAL = 0;
+        final int AFTER = 1;
+        
+        if (song2 == null) // Optimization
+            return AFTER;
+
+        if (artistVal != 0) {
+            if (artistVal > 0) {
+                return AFTER;
+            }
+            if (artistVal < 0) {
+                return BEFORE;
+            }
+        }
+        if (artistVal == 0 && titleVal != 0) {
+            if (titleVal > 0) {
+                return AFTER;
+            }
+            if (titleVal < 0) {
+                return BEFORE;
+            }
+        }
+        return EQUAL;
     }
 
     /**
