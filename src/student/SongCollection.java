@@ -125,6 +125,7 @@ public class SongCollection {
 
         // todo: show song count 
         System.out.println("Total songs: " + sc.getAllSongs().length);
+        System.out.println("The first 10 songs are:");
         Stream.of(sc.getAllSongs()).limit(10).forEach(System.out::println);
     }
 }
