@@ -1,5 +1,7 @@
 /*
- * 
+ * 1.2021 - Caleb Tracey & Abdikarim Jimale - Collaborated to impliment 
+ *   functionallity for the Song class with variables and a constructor. Also 
+ *   compareTo, toString, and accessor methods.
  * 8.2016 - Anne Applin - formatting and JavaDoc skeletons added   
  * 2015 - Prof. Bob Boothe - Starting code and main for testing  
  ************************************************************************
@@ -13,10 +15,9 @@ import java.util.*;
 
 /**
  *
- * @author boothe
+ * @author calebtracey
  */
 public class Song implements Comparable<Song> {
-
     // fields
     private String artist;
     private String title;
@@ -36,33 +37,36 @@ public class Song implements Comparable<Song> {
     }
 
     /**
-     *
-     * @return
+     * Accessor for artist
+     * 
+     * @return artist
      */
     public String getArtist() {
-        return artist;
+        return this.artist;
     }
 
     /**
-     *
-     * @return
+     * Accessor for lyrics
+     * 
+     * @return lyrics
      */
     public String getLyrics() {
-        return lyrics;
+        return this.lyrics;
     }
 
     /**
-     *
-     * @return
+     * Accessor for title
+     * 
+     * @return title
      */
     public String getTitle() {
-        return title;
+        return this.title;
     }
 
     /**
      * returns name and title ONLY
      *
-     * @return
+     * @return a string representing the artist and title only
      */
     @Override
     public String toString() {
@@ -82,13 +86,15 @@ public class Song implements Comparable<Song> {
      * example.
      */
     public int compareTo(Song song2) {
+        // int variables that hold values for artist and title comparison 
         int artistVal = this.artist.compareToIgnoreCase(song2.getArtist());
         int titleVal = this.title.compareToIgnoreCase(song2.getTitle());
+        // named constants for clarity
         final int BEFORE = -1;
         final int EQUAL = 0;
         final int AFTER = 1;
         
-        if (song2 == null) // Optimization
+        if (song2 == null) // Optimization in case of null object
             return AFTER;
 
         if (artistVal != 0) {
