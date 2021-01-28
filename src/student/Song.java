@@ -115,6 +115,12 @@ public class Song implements Comparable<Song> {
         }
         return EQUAL;
     }
+    
+    public static class CmpArtist implements Comparator<Song> {
+        public int compare(Song s1, Song s2) {
+            return s1.getArtist().compareToIgnoreCase(s2.getArtist());
+        }
+    }
 
     /**
      * testing method to unit test this class
@@ -160,5 +166,14 @@ public class Song implements Comparable<Song> {
         System.out.println("Song1 vs Song3 = " + s1.compareTo(s3));
         System.out.println("Song3 vs Song1 = " + s3.compareTo(s1));
         System.out.println("Song1 vs Song1 = " + s1.compareTo(s1));
+        
+        Song.CmpArtist testCmpArtist = new Song.CmpArtist();
+        
+        System.out.println("testing CmpArtist:");
+        System.out.println("Song1 vs Song2 = " + testCmpArtist.compare(s1, s2));
+        System.out.println("Song2 vs Song1 = " + testCmpArtist.compare(s2, s1));
+        System.out.println("Song1 vs Song3 = " + testCmpArtist.compare(s1, s3));
+        System.out.println("Song3 vs Song1 = " + testCmpArtist.compare(s3, s1));
+        System.out.println("Song1 vs Song1 = " + testCmpArtist.compare(s1, s1));
     }
 }
