@@ -85,6 +85,7 @@ public class Song implements Comparable<Song> {
      * artist's songs are together, but in alpha order. Follow the given
      * example.
      */
+    @Override
     public int compareTo(Song song2) {
         // int variables that hold values for artist and title comparison 
         int artistVal = this.artist.compareToIgnoreCase(song2.getArtist());
@@ -116,9 +117,11 @@ public class Song implements Comparable<Song> {
         return EQUAL;
     }
     
-    public static class CmpArtist implements Comparator<Song> {
+     public static class CmpArtist extends CmpCnt implements Comparator<Song> {
+        @Override
         public int compare(Song s1, Song s2) {
-            return s1.getArtist().compareToIgnoreCase(s2.getArtist());
+            cmpCnt++;
+            return s1.compareTo(s2);
         }
     }
 

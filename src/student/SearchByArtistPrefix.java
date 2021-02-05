@@ -42,18 +42,18 @@ public class SearchByArtistPrefix {
      * prefix
      */
     public Song[] search(String artistPrefix) {
-        
-        Song.CmpArtist cmpArtist = new Song.CmpArtist(); //not sure if needed
-        ArrayList matchingArtists = new ArrayList(); // temp list to hold matches
+
+        Song.CmpArtist cmpArtist = new Song.CmpArtist();
+        ArrayList matchingArtists = new ArrayList();// temp list to hold matches
         // create new song object with param for searching
         String artistPre = artistPrefix.toLowerCase();
         Song artistSearch = new Song(artistPre, null, null);
         int retVal; //return val for binary search below
 
-        for (int i = songs.length - 1; i > 0; i--) { // walk backwards
-            if (songs[i].getArtist().toLowerCase() // find first "startsWith"
+        for (int i = songs.length - 1; i > 0; i--) {// walk backwards
+            if (songs[i].getArtist().toLowerCase()// find first "startsWith"
                     .startsWith(artistSearch.getArtist())) {
-                retVal = Arrays.binarySearch(songs, songs[i]); //find key
+                retVal = Arrays.binarySearch(songs, songs[i]);//find key
                 // move forwards through data to find all results containt the
                 // param and add to ArrayList
                 for (int j = retVal; j < songs.length; j++) {
@@ -67,9 +67,21 @@ public class SearchByArtistPrefix {
                 }
             }
         }
-        Song[] artistsFound = new Song[matchingArtists.size()]; // set size
-        matchingArtists.toArray(artistsFound); // push list to array
-        Arrays.sort(artistsFound); // sort them
+        //implementation of comparable method
+        Collections.sort(matchingArtists, cmpArtist);
+        
+        /**
+         * TASK 4 STUFF
+         * 
+         * int totalSearches = ((CmpCnt)cmp).getCmpCnt();
+         * 
+         */
+        
+        
+        
+        Song[] artistsFound = new Song[matchingArtists.size()];// set size
+        matchingArtists.toArray(artistsFound);// push list to array
+        //Arrays.sort(artistsFound); // sort them
 
         return artistsFound;
     }
@@ -95,8 +107,8 @@ public class SearchByArtistPrefix {
             Song[] byArtistResult = sbap.search(args[1]);
 
             // to do: show first 10 matches
-            System.out.println("Total songs: " + byArtistResult.length + 
-                    ", first songs:");
+            System.out.println("Total songs: " + byArtistResult.length
+                    + ", first songs:");
             Stream.of(byArtistResult).limit(10).forEach(System.out::println);
         }
     }
