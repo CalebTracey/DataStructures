@@ -18,6 +18,7 @@ import java.util.*;
  * @author calebtracey
  */
 public class Song implements Comparable<Song> {
+
     // fields
     private String artist;
     private String title;
@@ -38,7 +39,7 @@ public class Song implements Comparable<Song> {
 
     /**
      * Accessor for artist
-     * 
+     *
      * @return artist
      */
     public String getArtist() {
@@ -47,7 +48,7 @@ public class Song implements Comparable<Song> {
 
     /**
      * Accessor for lyrics
-     * 
+     *
      * @return lyrics
      */
     public String getLyrics() {
@@ -56,7 +57,7 @@ public class Song implements Comparable<Song> {
 
     /**
      * Accessor for title
-     * 
+     *
      * @return title
      */
     public String getTitle() {
@@ -87,41 +88,43 @@ public class Song implements Comparable<Song> {
      */
     @Override
     public int compareTo(Song song2) {
-        // int variables that hold values for artist and title comparison 
+ // int variables that hold values for artist and title comparison 
         int artistVal = this.artist.compareToIgnoreCase(song2.getArtist());
         int titleVal = this.title.compareToIgnoreCase(song2.getTitle());
-        // named constants for clarity
-        final int BEFORE = -1;
-        final int EQUAL = 0;
-        final int AFTER = 1;
         
-        if (song2 == null) // Optimization in case of null object
-            return AFTER;
-
+        int comparison = 0;
+        
+        if (song2 == null) {// Optimization in case of null object
+            comparison = 1;
+        } else if (this == song2) {
+            comparison = 0;
+        }
         if (artistVal != 0) {
             if (artistVal > 0) {
-                return AFTER;
+                comparison = 1;
             }
             if (artistVal < 0) {
-                return BEFORE;
+                comparison = -1;
             }
         }
         if (artistVal == 0 && titleVal != 0) {
             if (titleVal > 0) {
-                return AFTER;
+                comparison = 1;
             }
             if (titleVal < 0) {
-                return BEFORE;
+                comparison = -1;
             }
         }
-        return EQUAL;
+        return comparison;
     }
     
-     public static class CmpArtist extends CmpCnt implements Comparator<Song> {
+
+    public static class CmpArtist extends CmpCnt implements Comparator<Song> {
+
         @Override
         public int compare(Song s1, Song s2) {
             cmpCnt++;
-            return s1.compareTo(s2);
+            return s1.getArtist().compareToIgnoreCase(s2.getArtist());
         }
     }
 
@@ -169,9 +172,9 @@ public class Song implements Comparable<Song> {
         System.out.println("Song1 vs Song3 = " + s1.compareTo(s3));
         System.out.println("Song3 vs Song1 = " + s3.compareTo(s1));
         System.out.println("Song1 vs Song1 = " + s1.compareTo(s1));
-        
+
         Song.CmpArtist testCmpArtist = new Song.CmpArtist();
-        
+
         System.out.println("testing CmpArtist:");
         System.out.println("Song1 vs Song2 = " + testCmpArtist.compare(s1, s2));
         System.out.println("Song2 vs Song1 = " + testCmpArtist.compare(s2, s1));

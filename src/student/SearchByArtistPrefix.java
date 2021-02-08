@@ -42,48 +42,59 @@ public class SearchByArtistPrefix {
      * prefix
      */
     public Song[] search(String artistPrefix) {
-
-        Song.CmpArtist cmpArtist = new Song.CmpArtist();
+        Comparator<Song> cmp = new Song.CmpArtist();
+        //Song.CmpArtist cmp = new Song.CmpArtist();
         ArrayList matchingArtists = new ArrayList();// temp list to hold matches
         // create new song object with param for searching
         String artistPre = artistPrefix.toLowerCase();
-        Song artistSearch = new Song(artistPre, null, null);
-        int retVal; //return val for binary search below
-
-        for (int i = songs.length - 1; i > 0; i--) {// walk backwards
-            if (songs[i].getArtist().toLowerCase()// find first "startsWith"
-                    .startsWith(artistSearch.getArtist())) {
-                retVal = Arrays.binarySearch(songs, songs[i]);//find key
-                // move forwards through data to find all results containt the
-                // param and add to ArrayList
-                for (int j = retVal; j < songs.length; j++) {
-                    if (songs[j].getArtist().toLowerCase()
-                            .contains(artistPre)) {
-                        // check to see if the found object is already in list
-                        if (!matchingArtists.contains(songs[j])) {
-                            matchingArtists.add(songs[j]);
-                        }
-                    }
-                }
-            }
+        Song key = new Song(artistPre, "none", "none");
+      
+        ((CmpCnt)cmp).resetCmpCnt(); // set counter to 0
+        int partLength = artistPre.length();
+        // call the Arrays.binarySearch with the array, key, the Song
+        int i = Arrays.binarySearch(songs, key, cmp);
+        System.out.println(((CmpCnt)cmp).getCmpCnt() + " compares for search." 
+                + "\n");
+        System.out.println("The result of the binary search: " + i);
+        int loopCount = 0; // counter for while loops
+        
+        if (i < 0) {
+            i = -i - 1;
         }
-        //implementation of comparable method
-        Collections.sort(matchingArtists, cmpArtist);
+        System.out.println("Index key is: " + i + "\n");
+        System.out.println("Artist and title at index " + i + ":" + "\n" + 
+                songs[i] + "\n");
+        System.out.println("Artist for comparison: " + songs[i].getArtist());
         
-        /**
-         * TASK 4 STUFF
-         * 
-         * int totalSearches = ((CmpCnt)cmp).getCmpCnt();
-         * 
-         */
-        
-        
-        
-        Song[] artistsFound = new Song[matchingArtists.size()];// set size
-        matchingArtists.toArray(artistsFound);// push list to array
-        //Arrays.sort(artistsFound); // sort them
-
+        if (i >= 0) {// it should be, but it never hurts to be careful
+            // find the front - the first partial match.
+            while (i >= 0 && 
+                    songs[i].getArtist().length() >= partLength &&
+                    songs[i].getArtist().substring(0, partLength).
+                    compareToIgnoreCase(artistPre) == 0) {
+                i--;
+                loopCount++; //counter for the loop
+            }
+            // we WILL go one too far.
+            i++;
+            // now fill the list by walking forward
+            while (i < songs.length && 
+                    songs[i].getArtist().length() >= partLength && 
+                    songs[i].getArtist().substring(0, partLength).
+                    compareToIgnoreCase(artistPre) == 0) {
+                matchingArtists.add(songs[i]);
+                i++;
+                loopCount++;
+            }
+            Song[] artistsFound = new Song[matchingArtists.size()];// set size
+            matchingArtists.toArray(artistsFound);// push list to array
+            int totalCount = loopCount + ((CmpCnt)cmp).getCmpCnt();
+            System.out.println("Total count of comparisons: " + totalCount + 
+                    "\n");
         return artistsFound;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -103,7 +114,7 @@ public class SearchByArtistPrefix {
         SearchByArtistPrefix sbap = new SearchByArtistPrefix(sc);
 
         if (args.length > 1) {
-            System.out.println("searching for: " + args[1]);
+            System.out.println("searching for: " + args[1] +"\n");
             Song[] byArtistResult = sbap.search(args[1]);
 
             // to do: show first 10 matches
