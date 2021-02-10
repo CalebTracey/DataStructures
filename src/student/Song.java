@@ -1,4 +1,5 @@
 /*
+ * 2.2021 - Caleb Tracey & Dale Das Added CmpArtist class
  * 1.2021 - Caleb Tracey & Abdikarim Jimale - Collaborated to impliment 
  *   functionallity for the Song class with variables and a constructor. Also 
  *   compareTo, toString, and accessor methods.

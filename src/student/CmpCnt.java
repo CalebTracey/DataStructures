@@ -3,6 +3,7 @@
  * ****************************************************************************
  *                             revision history
  * ****************************************************************************
+ * 2.2021 - Caleb Tracey & Dale Das Implemented CmpCnt class
  * 2016 Anne Applin - added JavaDoc and did some formatting. 2015 CmpCnt.java
  * Bob Boothe
  * ****************************************************************************
