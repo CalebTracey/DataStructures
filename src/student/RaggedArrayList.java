@@ -4,7 +4,7 @@
  * revision history
  * ****************************************************************************
  * 9.25.2020 -- AA cleaning up documentation again
- * 8/2015 - Anne Applin - Added formatting and JavaDoc 
+ * 8/2015 - Anne Applin - Added formatting and JavaDoc
  * 2015 - Bob Boothe - starting code
  * ****************************************************************************
  * The RaggedArrayList is a 2 level data structure that is an array of arrays.
@@ -23,6 +23,7 @@ package student;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import static java.lang.String.valueOf;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -33,7 +34,6 @@ import java.util.Scanner;
 public class RaggedArrayList<E> implements Iterable<E> {
 
     // must be even so when split get two equal pieces
-
     private static final int MINIMUM_SIZE = 4;
     /**
      * The total number of elements in the entire RaggedArrayList
@@ -95,9 +95,7 @@ public class RaggedArrayList<E> implements Iterable<E> {
         }
     }// end of nested class L2Array
 
-   
     // ***********************************************************
-    
     /**
      * total size (number of entries) in the entire data structure (DONE - do
      * not change)
@@ -184,15 +182,43 @@ public class RaggedArrayList<E> implements Iterable<E> {
      * find 1st matching entry
      *
      * @param item the thing we are searching for a place to put.
-     * @return a ListLoc object - ListLoc of 1st matching item or of 1st 
-     *     item greater than the item if no match this might be an 
-     *     unused slot at the end of a level 2 array
+     * @return a ListLoc object - ListLoc of 1st matching item or of 1st item
+     * greater than the item if no match this might be an unused slot at the end
+     * of a level 2 array
      */
     public ListLoc findFront(E item) {
-        // TO DO in part 3
-
-        return null; // when finished should return: new ListLoc(l1,l2);
+        ListLoc res = new ListLoc(0, 0);
+        try {
+            for (int i = 0; i < this.l1NumUsed; i++) {
+                L2Array l2Array = (L2Array) l1Array[i];
+                for (int j = 0; j < l2Array.numUsed; j++) {
+                    if (l2Array.items[j].equals(item)) {
+                        res = new ListLoc(i, j);
+                        return res;
+                    } else if (comp.compare(item, l2Array.items[j]) < 0) {
+                        res = new ListLoc(i, j);
+                        return res;
+                    } else {
+                        res = new ListLoc(i, j + 1);
+                    }
+                }
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println(item.toString() + " Out of bounds error");
+        }
+        return res;
     }
+//        ListLoc res = new ListLoc(0, 0);
+//        Boolean hasMatch = false;
+//        String key = item.toString();
+//        int search = Arrays.binarySearch(this.l1Array, key);
+//
+//        for (int i = 0; i < this.l1NumUsed; i++) {
+//            L2Array l2Array = (L2Array) l1Array[i];
+//            for (E element : l2Array.items) {
+//                
+//            }
+//            int j = Arrays.binarySearch(l2Array, key, cmp);
 
     /**
      * find location after the last matching entry or if no match, it finds the
@@ -203,9 +229,24 @@ public class RaggedArrayList<E> implements Iterable<E> {
      * @return a ListLoc object - the location where this item should go
      */
     public ListLoc findEnd(E item) {
-        // TO DO in part 3
-
-        return null; // when finished should return: new ListLoc(l1,l2);
+        ListLoc res = new ListLoc(0, 0);
+        try {
+            for (int i = l1NumUsed - 1; i >= 0; i--) {
+                L2Array l2Array = (L2Array) l1Array[i];
+                for (int j = l2Array.numUsed - 1; j >= 0; j--) {
+                    if (l2Array.items[j].equals(item)) {
+                        res = new ListLoc(i, j + 1);
+                        return res;
+                    } else if (comp.compare(item, l2Array.items[j]) > 0) {
+                        res = new ListLoc(i, j + 1);
+                        return res;
+                    }
+                }
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println(item.toString() + " Out of bounds error");
+        }
+        return res;
     }
 
     /**
@@ -269,6 +310,7 @@ public class RaggedArrayList<E> implements Iterable<E> {
      */
     public Iterator<E> iterator() {
         return new Itr();
+
     }
 
     /**
@@ -297,8 +339,8 @@ public class RaggedArrayList<E> implements Iterable<E> {
         }
 
         /**
-         * return item and move to next throws NoSuchElementException if 
-         * off end of list
+         * return item and move to next throws NoSuchElementException if off end
+         * of list
          */
         public E next() {
             // TO DO in part 5
