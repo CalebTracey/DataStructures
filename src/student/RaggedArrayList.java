@@ -3,6 +3,8 @@
  * ****************************************************************************
  * revision history
  * ****************************************************************************
+ * 2.2020 -- Caleb Tracey and Nick Largey implemented the findFront and FindEnd
+ *           methods.
  * 9.25.2020 -- AA cleaning up documentation again
  * 8/2015 - Anne Applin - Added formatting and JavaDoc
  * 2015 - Bob Boothe - starting code
@@ -21,20 +23,9 @@
  */
 package student;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import static java.lang.String.valueOf;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Random;
-import java.util.Scanner;
-import java.util.TreeMap;
-import java.util.function.Consumer;
 
 public class RaggedArrayList<E> implements Iterable<E> {
 
@@ -212,155 +203,6 @@ public class RaggedArrayList<E> implements Iterable<E> {
         return new ListLoc(i, l2index);
     }
 
-//        int l1Index = 0;
-//        int l2IndexFirst = 0;
-//        int l1Low = 0;
-//        int l2Low = 0;
-//        int l1Middle = 0;
-//        int l2Middle = 0;
-//        int count = 0;
-//        int l1High = l1NumUsed - 1;
-//        int l2High = 0;
-//        //Boolean foundFirst = false;
-//        ListLoc res = new ListLoc(0, 0);
-//        ArrayList<ListLoc> firstL2Items = new ArrayList<>();
-//
-//        if (size == 0) {
-//            return res;
-//        }
-//        try {
-//            //while (l1Low <= l1High) {
-//
-//            //l2Index = l2Middle = (l2Low + l2High + 1) / 2;
-//            ArrayList<ListLoc> lastL2Items = new ArrayList<>();
-//            /**
-//             * Binary search first
-//             */
-//            while (l1Low <= l1High) {
-//                // determine middle of L1 array for inital search
-//                l1Index = l1Middle = (l1Low + l1High + 1) / 2;
-//                // get the L2 array object from the current L1 array position
-//                L2Array l2ArrayNulls = (L2Array) l1Array[l1Middle];
-//                // save numUsed
-//                int numsUsed = l2ArrayNulls.numUsed;
-//                // remove nulls from array
-//                E[] l2Array = Arrays.copyOfRange(l2ArrayNulls.items, 0,
-//                        numsUsed);
-//                l2High = l2Array.length;
-//
-//                l2IndexFirst = l2Middle = (l2Low + l2High + 1) / 2;
-//                // if the item is lesser than the current element
-//                if (comp.compare(item, l2Array[l2IndexFirst]) < 0) {
-//                    while (l2IndexFirst != 0) {
-//                        // if current element is not equal then check next
-//                        if (!l2Array[l2IndexFirst].equals(item)) {
-//                            l2IndexFirst--;
-//                        }
-//                        // if next element is equal then add to list and
-//                        // check next
-//                        if (l2Array[l2IndexFirst].equals(item)) {
-//                            ListLoc l2First
-//                                    = new ListLoc(l1Index, l2IndexFirst);
-//                            firstL2Items.add(l2First);
-//                            l2IndexFirst--;
-//                            /**
-//                             * bug on test 3 here. Index is zero but why is it
-//                             * skipping over?????
-//                             */
-//                            // if index is zero, check if the last element 
-//                            // equal or not. Then adjust l1 array
-//                        } 
-//                        if (l2IndexFirst == 0) {
-//                            if (!l2Array[l2IndexFirst].equals(item)) {
-//                                l1High = l1Middle - 1;
-//                            } else if (l2Array[l2IndexFirst].equals(item)) {
-//                                ListLoc l2First = new ListLoc(l1Index,
-//                                        l2IndexFirst);
-//                                firstL2Items.add(l2First);
-//                                l1High = l1Middle - 1;
-//                            }
-//                        }
-//                    }
-//                    // if element at first index is equal to item,
-//                    // add to list
-//                } else if (comp.compare(item, l2Array[l2IndexFirst]) == 0) {
-//                    ListLoc l2First
-//                            = new ListLoc(l1Index, l2IndexFirst);
-//                    firstL2Items.add(l2First);
-//                    // while the index is not zero...
-//                    while (l2IndexFirst != 0) {
-//                        // if the element doesnt equal the item then change
-//                        // index to next element
-//                        if (!l2Array[l2IndexFirst].equals(item)) {
-//                            l2IndexFirst--;
-//                        }
-//                        // if the element does equal the item then add it to
-//                        // the list and change index to next element to 
-//                        // check for duplicates.
-//                        if (l2Array[l2IndexFirst].equals(item)) {
-//                            l2First = new ListLoc(l1Index, l2IndexFirst);
-//                            firstL2Items.add(l2First);
-//                            l2IndexFirst--;
-//                            // if the index is zero...
-//                        } else if (l2IndexFirst == 0) {
-//                            // if not a match then adjust the l1 array
-//                            if (!l2Array[l2IndexFirst].equals(item)) {
-//                                l1High = l1Middle - 1;
-//                                // if it is a match then add to list and adjust
-//                                // l1 array
-//                            } 
-//                            if (l2Array[l2IndexFirst].equals(item)) {
-//                                l2First = new ListLoc(l1Index,
-//                                        l2IndexFirst);
-//                                firstL2Items.add(l2First);
-//                                l1High = l1Middle - 1;
-//                            }
-//                        }
-//                    }
-//                    // if the item is is "bigger" than the element at first 
-//                    // index ..
-//                } else if (comp.compare(item,
-//                        l2Array[l2IndexFirst]) > 0) {
-//                    // while index is lesser than the number of elements
-//                    while (l2IndexFirst < numsUsed) {
-//                        // if not a match, then move forward
-//                        if (!l2Array[l2IndexFirst].equals(item)) {
-//                            l2IndexFirst++;
-//                        }
-//                        // if still inside bounds of array and item is equal
-//                        // add to list and stop because thats first element
-//                        if (l2IndexFirst < numsUsed
-//                                && l2Array[l2IndexFirst].equals(item)) {
-//                            ListLoc l2First = new ListLoc(l1Index,
-//                                    l2IndexFirst);
-//                            firstL2Items.add(l2First);
-//                            // if the index and total element count are 
-//                            // equal, then check last element and adjust
-//                            // l1 array if not equal
-//                        } else if (l2IndexFirst == numsUsed) {
-//                            if (!l2Array[l2IndexFirst - 1].equals(item)) {
-//                                l1Low = l1Middle + 1;
-//                                // otherwise add to list if equal
-//                            }
-//                            if (l2Array[l2IndexFirst - 1]
-//                                    .equals(item)) {
-//                                ListLoc l2First = new ListLoc(l1Index,
-//                                        l2IndexFirst);
-//                                firstL2Items.add(l2First);
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//            // set the result to the last list element which is the "first"    
-//            res = firstL2Items.get(firstL2Items.size() - 1);
-//            //count++;
-//        } catch (ArrayIndexOutOfBoundsException e) {
-//            System.out.println(item.toString() + " Out of bounds error" + " "
-//                    + l1Index + ", " + l2IndexFirst);
-//        }
-//        return res;
-//    }
     /**
      * find location after the last matching entry or if no match, it finds the
      * index of the next larger item this is the position to add a new entry
@@ -370,27 +212,6 @@ public class RaggedArrayList<E> implements Iterable<E> {
      * @return a ListLoc object - the location where this item should go
      */
     public ListLoc findEnd(E item) {
-        /**
-         * Binary search last
-         */
-//                while (l2Low <= l2High) {
-//                    l2IndexLast = (l2Low + l2High + 1) / 2;
-//                    if (comp.compare(item, l2Array[l2IndexLast]) == 0) {
-//                        while (l2IndexLast < numsUsed
-//                                && l2Array[l2IndexLast].equals(item)) {
-//                            ListLoc l2Last = 
-//                                    new ListLoc(l1Index, l2IndexLast);
-//                            firstL2Items.add(l2Last);
-//                            l2IndexLast++;
-//                            if (l2IndexLast < numsUsed && 
-//                                    !l2Array[l2IndexLast].equals(item)) {
-//                                l2IndexLast = l2IndexLast - 1;
-//                            } else if (l2IndexLast == 0) {
-//                                l1Low = l1Middle + 1;
-//                            }
-//                        }
-//                    }
-//                }
         if (size == 0) {
             return new ListLoc(0, 0);
         }
