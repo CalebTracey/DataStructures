@@ -23,6 +23,7 @@
  */
 package student;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -189,7 +190,7 @@ public class RaggedArrayList<E> implements Iterable<E> {
 
         int i = 0;
         L2Array l2Array = (L2Array) l1Array[i];
-        while (i < l1NumUsed - 1 && comp.compare(item, 
+        while (i < l1NumUsed - 1 && comp.compare(item,
                 l2Array.items[l2Array.numUsed - 1]) > 0) {
             i++;
             l2Array = (L2Array) l1Array[i];
@@ -218,12 +219,11 @@ public class RaggedArrayList<E> implements Iterable<E> {
 
         int i = l1NumUsed - 1;
         L2Array l2Array = (L2Array) l1Array[i];
-        while (i > 0 && comp.compare(item, l2Array.items[0]) < 0) {           
+        while (i > 0 && comp.compare(item, l2Array.items[0]) < 0) {
             i--;
             l2Array = (L2Array) l1Array[i];
-            System.out.println(i + " " + comp.compare(item, l2Array.items[0]) + " ");
         }
-        
+
         int l2index = l2Array.numUsed - 1;
         while (l2index >= 0
                 && comp.compare(item, l2Array.items[l2index]) < 0) {
@@ -241,8 +241,62 @@ public class RaggedArrayList<E> implements Iterable<E> {
      * @return
      */
     public boolean add(E item) {
-        // TO DO in part 4
+        // use find end method to find where to add item
+        ListLoc addItem = this.findEnd(item);
+        int l1Index = addItem.level1Index;
+        int l2Index = addItem.level2Index;
+        L2Array l2Array = (L2Array) l1Array[l1Index];
+        // convert l1 and l2 arrays to ArrayLists for easier inserting
+        ArrayList<Object> l1ArrayList
+                = new ArrayList<>(Arrays.asList(l1Array));
+        ArrayList<E> l2ArrayList
+                = new ArrayList<>(Arrays.asList(l2Array.items));
+        l2ArrayList.add(l2Index, item);
+        // set l2Array values to the same as l2ArrayList while retaining length
+        System.arraycopy(l2ArrayList.toArray(), 0, l2Array.items, 0,
+                l2Array.items.length);
+        l2Array.numUsed++;
+        
+        // check to see if l2Array is full
+        if (l2Array.numUsed == l2Array.items.length) {
+            // if so, and the l2Array length is smaller than l1Array length,
+            // double l2's size and set the empty indexes to null
+            if (l2Array.items.length < l1Array.length) {
+                l2Array.items = Arrays.copyOf(l2Array.items,
+                        l2Array.items.length * 2);
+                Arrays.fill(l2Array.items, l2Array.numUsed,
+                        l2Array.items.length, null);
+                l1Array[l1Index] = l2Array;
+              // if l1Array has a greater or equal size...
+            } else if (l2Array.items.length >= l1Array.length) {
+                // create a new L2Array of the same size
+                L2Array splitL2Array = new L2Array(l2Array.items.length);
+                int half = l2Array.numUsed / 2;
+                // copy the second half of elements from l2Array into new one
+                System.arraycopy(l2Array.items, half,
+                        splitL2Array.items, 0, half);
+                splitL2Array.numUsed = l2Array.numUsed - half; // set numUsed
+                Arrays.fill(l2Array.items, half, // set empty indexes to null
+                        l2Array.numUsed, null);
+                l2Array.numUsed = l2Array.numUsed - half; //set numUsed
+                // add / insert new L2Arrays into l1ArrayList
+                l1ArrayList.set(l1Index, l2Array);
+                l1ArrayList.add(l1Index + 1, splitL2Array);
+                // update l1Array's values while retaining length
+                System.arraycopy(l1ArrayList.toArray(), 0, l1Array, 0,
+                        l1Array.length);
+                l1NumUsed++;
+                // check to see if l1Array is full
+                if (l1NumUsed == l1Array.length) {
+                    // if so double size
+                    l1Array = Arrays.copyOf(l1Array,
+                            l1Array.length * 2);
+                    Arrays.fill(l1Array, l1NumUsed,
+                            l1Array.length, null);
+                }
 
+            }
+        }
         return true;
     }
 
