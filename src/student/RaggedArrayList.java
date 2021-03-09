@@ -3,8 +3,11 @@
  * ****************************************************************************
  * revision history
  * ****************************************************************************
+ * 3.2020 -- Caleb Tracey and Jon Weiss implemented iterator, moveToNext, 
+ *           subList, and toArray methods
+ * 2.2020 -- Caleb Tracey implemented the add method
  * 2.2020 -- Caleb Tracey and Nick Largey implemented the findFront and FindEnd
- *           methods.
+ *           methods
  * 9.25.2020 -- AA cleaning up documentation again
  * 8/2015 - Anne Applin - Added formatting and JavaDoc
  * 2015 - Bob Boothe - starting code
@@ -159,7 +162,6 @@ public class RaggedArrayList<E> implements Iterable<E> {
                 return false;
             }
             ListLoc other = (ListLoc) otherObj;
-
             return level1Index == other.level1Index
                     && level2Index == other.level2Index;
         }
@@ -171,7 +173,21 @@ public class RaggedArrayList<E> implements Iterable<E> {
          * used to implement the iterator.
          */
         public void moveToNext() {
-            // TO DO IN PART 5
+            L2Array l2Array = (L2Array) l1Array[this.level1Index];
+            if (this.level1Index < l1NumUsed - 1) {
+                if (this.level2Index < l2Array.numUsed - 1) {
+                    this.level2Index++;
+                } else if (this.level2Index == l2Array.numUsed - 1) {
+                    this.level1Index++;
+                    this.level2Index = 0;
+                }
+            } else if (this.level1Index == l1NumUsed - 1) {
+                if (this.level2Index < l2Array.numUsed - 1) {
+                    this.level2Index++;
+                } else if (this.level2Index == l2Array.numUsed - 1) {
+                    this.level2Index = l2Array.numUsed + 1;
+                }
+            }
         }
     }
 
@@ -187,7 +203,6 @@ public class RaggedArrayList<E> implements Iterable<E> {
         if (size == 0) {
             return new ListLoc(0, 0);
         }
-
         int i = 0;
         L2Array l2Array = (L2Array) l1Array[i];
         while (i < l1NumUsed - 1 && comp.compare(item,
@@ -195,7 +210,6 @@ public class RaggedArrayList<E> implements Iterable<E> {
             i++;
             l2Array = (L2Array) l1Array[i];
         }
-
         int l2index = 0;
         while (l2index <= l2Array.numUsed - 1
                 && comp.compare(item, l2Array.items[l2index]) > 0) {
@@ -216,14 +230,12 @@ public class RaggedArrayList<E> implements Iterable<E> {
         if (size == 0) {
             return new ListLoc(0, 0);
         }
-
         int i = l1NumUsed - 1;
         L2Array l2Array = (L2Array) l1Array[i];
         while (i > 0 && comp.compare(item, l2Array.items[0]) < 0) {
             i--;
             l2Array = (L2Array) l1Array[i];
         }
-
         int l2index = l2Array.numUsed - 1;
         while (l2index >= 0
                 && comp.compare(item, l2Array.items[l2index]) < 0) {
@@ -256,7 +268,7 @@ public class RaggedArrayList<E> implements Iterable<E> {
         System.arraycopy(l2ArrayList.toArray(), 0, l2Array.items, 0,
                 l2Array.items.length);
         l2Array.numUsed++;
-        
+        this.size++; // update size  
         // check to see if l2Array is full
         if (l2Array.numUsed == l2Array.items.length) {
             // if so, and the l2Array length is smaller than l1Array length,
@@ -267,7 +279,7 @@ public class RaggedArrayList<E> implements Iterable<E> {
                 Arrays.fill(l2Array.items, l2Array.numUsed,
                         l2Array.items.length, null);
                 l1Array[l1Index] = l2Array;
-              // if l1Array has a greater or equal size...
+                // if l1Array has a greater or equal size...
             } else if (l2Array.items.length >= l1Array.length) {
                 // create a new L2Array of the same size
                 L2Array splitL2Array = new L2Array(l2Array.items.length);
@@ -307,9 +319,13 @@ public class RaggedArrayList<E> implements Iterable<E> {
      * @return true if the item is already in the data structure
      */
     public boolean contains(E item) {
-        // TO DO in part 5
-
-        return false;
+        if (item != null) {
+            ListLoc itemLoc = this.findFront(item);
+            L2Array l2Array = (L2Array) l1Array[itemLoc.level1Index];
+            return comp.compare(item, l2Array.items[itemLoc.level2Index]) == 0;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -319,8 +335,12 @@ public class RaggedArrayList<E> implements Iterable<E> {
      * @return the filled in array
      */
     public E[] toArray(E[] a) {
-        // TO DO in part 5
-
+        int i = 0;
+        Iterator<E> itr = this.iterator();
+        while (itr.hasNext()) {
+            a[i] = itr.next();
+            i++;
+        }
         return a;
     }
 
@@ -334,9 +354,23 @@ public class RaggedArrayList<E> implements Iterable<E> {
      * @return the sublist
      */
     public RaggedArrayList<E> subList(E fromElement, E toElement) {
-        // TO DO in part 5
+        RaggedArrayList<E> result = new RaggedArrayList<>(comp);
+        ListLoc beginningElement = new ListLoc(0, 0);
+        ListLoc lastElement = new ListLoc(0, 0);
+        ListLoc currentLocation = new ListLoc(0, 0);
+        E currentItem;
 
-        RaggedArrayList<E> result = new RaggedArrayList<E>(comp);
+        beginningElement = findFront(fromElement); // location of the beginning
+        lastElement = findFront(toElement); //location of the end
+        L2Array l2Array = (L2Array) l1Array[beginningElement.level1Index];
+
+        while (!currentLocation.equals(lastElement)) {
+            currentLocation = beginningElement;
+            currentItem = l2Array.items[currentLocation.level2Index];
+            result.add(currentItem);
+            currentLocation.moveToNext();
+            l2Array = (L2Array) l1Array[currentLocation.level1Index];
+        }
         return result;
     }
 
@@ -371,9 +405,8 @@ public class RaggedArrayList<E> implements Iterable<E> {
          * check if more items
          */
         public boolean hasNext() {
-            // TO DO in part 5
-
-            return false;
+            L2Array l2 = (L2Array) l1Array[loc.level1Index];
+            return l2.items[loc.level2Index] != null;
         }
 
         /**
@@ -381,9 +414,14 @@ public class RaggedArrayList<E> implements Iterable<E> {
          * of list
          */
         public E next() {
-            // TO DO in part 5
-
-            throw new IndexOutOfBoundsException();
+            L2Array l2Array = (L2Array) l1Array[loc.level1Index];
+            E nextItem = (E) l2Array.items[loc.level2Index];
+            try {
+                loc.moveToNext();
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println(e.getMessage());
+            }
+            return nextItem;
         }
 
         /**
