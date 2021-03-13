@@ -3,7 +3,7 @@
  * ****************************************************************************
  * revision history
  * ****************************************************************************
- * 3.2020 -- Caleb Tracey and Jon Weiss implemented iterator, moveToNext, 
+ * 3.2020 -- Caleb Tracey and Jon Weiss implemented iterator, moveToNext,
  *           subList, and toArray methods
  * 2.2020 -- Caleb Tracey implemented the add method
  * 2.2020 -- Caleb Tracey and Nick Largey implemented the findFront and FindEnd
@@ -127,7 +127,6 @@ public class RaggedArrayList<E> implements Iterable<E> {
      * index and level 2 index
      */
     public class ListLoc {
-
         /**
          * Level 1 index
          */
@@ -253,62 +252,63 @@ public class RaggedArrayList<E> implements Iterable<E> {
      * @return
      */
     public boolean add(E item) {
-        // use find end method to find where to add item
-        ListLoc addItem = this.findEnd(item);
-        int l1Index = addItem.level1Index;
-        int l2Index = addItem.level2Index;
-        L2Array l2Array = (L2Array) l1Array[l1Index];
-        // convert l1 and l2 arrays to ArrayLists for easier inserting
-        ArrayList<Object> l1ArrayList
-                = new ArrayList<>(Arrays.asList(l1Array));
-        ArrayList<E> l2ArrayList
-                = new ArrayList<>(Arrays.asList(l2Array.items));
-        l2ArrayList.add(l2Index, item);
-        // set l2Array values to the same as l2ArrayList while retaining length
-        System.arraycopy(l2ArrayList.toArray(), 0, l2Array.items, 0,
-                l2Array.items.length);
+        //Get the target location
+        ListLoc target = findEnd(item);
+        //Save a reference to the L2Array to make iterating easier
+        L2Array l2Array = (L2Array) l1Array[target.level1Index];
+        //Iterate through the array, move everything after the insert point
+        int i = l2Array.numUsed - 1;
+        while (i >= target.level2Index) {
+            l2Array.items[i + 1] = l2Array.items[i];
+            i--;
+        }
+        //Insert the item and increase item counter
+        l2Array.items[target.level2Index] = item;
         l2Array.numUsed++;
-        this.size++; // update size  
-        // check to see if l2Array is full
+        this.size++; // update size
+        //Special cases if the L2 Array is filled
         if (l2Array.numUsed == l2Array.items.length) {
-            // if so, and the l2Array length is smaller than l1Array length,
-            // double l2's size and set the empty indexes to null
-            if (l2Array.items.length < l1Array.length) {
+            //in the case the L2 Array is at the max allowed size
+            if (l2Array.items.length == l1Array.length) {
+                //Iterate through the array, bumping everything up
+                i = l1NumUsed - 1;
+                l1Array[l1NumUsed] = new L2Array(4);
+                //In order to move an array
+                while (i >= target.level1Index) {
+                    //Clone the array
+                    ((L2Array) l1Array[i + 1]).items
+                            = ((L2Array) l1Array[i]).items.clone();
+                    //Copy the numUsed in the array
+                    ((L2Array) l1Array[i + 1]).numUsed
+                            = ((L2Array) l1Array[i]).numUsed;
+                    i--;
+                }
+                //Split the max size array into 2 different arrays
+                L2Array other = (L2Array) l1Array[target.level1Index + 1];
+                other.items = Arrays.copyOfRange(l2Array.items,
+                        l2Array.items.length / 2, l2Array.items.length);
+                other.items = Arrays.copyOf(other.items, other.items.length * 2);
+                other.numUsed = l2Array.numUsed / 2;
+                l2Array.items = Arrays.copyOfRange(l2Array.items,
+                        0, l2Array.items.length / 2);
                 l2Array.items = Arrays.copyOf(l2Array.items,
                         l2Array.items.length * 2);
-                Arrays.fill(l2Array.items, l2Array.numUsed,
-                        l2Array.items.length, null);
-                l1Array[l1Index] = l2Array;
-                // if l1Array has a greater or equal size...
-            } else if (l2Array.items.length >= l1Array.length) {
-                // create a new L2Array of the same size
-                L2Array splitL2Array = new L2Array(l2Array.items.length);
-                int half = l2Array.numUsed / 2;
-                // copy the second half of elements from l2Array into new one
-                System.arraycopy(l2Array.items, half,
-                        splitL2Array.items, 0, half);
-                splitL2Array.numUsed = l2Array.numUsed - half; // set numUsed
-                Arrays.fill(l2Array.items, half, // set empty indexes to null
-                        l2Array.numUsed, null);
-                l2Array.numUsed = l2Array.numUsed - half; //set numUsed
-                // add / insert new L2Arrays into l1ArrayList
-                l1ArrayList.set(l1Index, l2Array);
-                l1ArrayList.add(l1Index + 1, splitL2Array);
-                // update l1Array's values while retaining length
-                System.arraycopy(l1ArrayList.toArray(), 0, l1Array, 0,
-                        l1Array.length);
+                l2Array.numUsed = l2Array.numUsed / 2;
                 l1NumUsed++;
-                // check to see if l1Array is full
-                if (l1NumUsed == l1Array.length) {
-                    // if so double size
-                    l1Array = Arrays.copyOf(l1Array,
-                            l1Array.length * 2);
-                    Arrays.fill(l1Array, l1NumUsed,
-                            l1Array.length, null);
-                }
 
+                //If the L1 array has hit capacity
+                if (l1NumUsed == l1Array.length) {
+                    //Increase the max size of the array
+                    l1Array = Arrays.copyOf(l1Array, l1Array.length * 2);
+                }
+            } //if the L2 Array is allowed to get bigger
+            else {
+                //Double the L2 Array size
+                l2Array.items = Arrays.copyOf(l2Array.items,
+                        l2Array.items.length * 2);
             }
         }
+
         return true;
     }
 
