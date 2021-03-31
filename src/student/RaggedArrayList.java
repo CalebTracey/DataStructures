@@ -26,10 +26,10 @@
  */
 package student;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class RaggedArrayList<E> implements Iterable<E> {
 
@@ -184,7 +184,7 @@ public class RaggedArrayList<E> implements Iterable<E> {
                 if (this.level2Index < l2Array.numUsed - 1) {
                     this.level2Index++;
                 } else if (this.level2Index == l2Array.numUsed - 1) {
-                    this.level2Index = l2Array.numUsed + 1;
+                    this.level2Index = l2Array.numUsed;
                 }
             }
         }
@@ -355,13 +355,11 @@ public class RaggedArrayList<E> implements Iterable<E> {
      */
     public RaggedArrayList<E> subList(E fromElement, E toElement) {
         RaggedArrayList<E> result = new RaggedArrayList<>(comp);
-        ListLoc beginningElement = new ListLoc(0, 0);
-        ListLoc lastElement = new ListLoc(0, 0);
         ListLoc currentLocation = new ListLoc(0, 0);
         E currentItem;
 
-        beginningElement = findFront(fromElement); // location of the beginning
-        lastElement = findFront(toElement); //location of the end
+        ListLoc beginningElement = findFront(fromElement); // location of the beginning
+        ListLoc lastElement = findFront(toElement); //location of the end
         L2Array l2Array = (L2Array) l1Array[beginningElement.level1Index];
 
         while (!currentLocation.equals(lastElement)) {
@@ -413,12 +411,12 @@ public class RaggedArrayList<E> implements Iterable<E> {
          * return item and move to next throws NoSuchElementException if off end
          * of list
          */
-        public E next() {
+        public E next() throws NoSuchElementException {
             L2Array l2Array = (L2Array) l1Array[loc.level1Index];
             E nextItem = (E) l2Array.items[loc.level2Index];
             try {
                 loc.moveToNext();
-            } catch (IndexOutOfBoundsException e) {
+            } catch (NoSuchElementException e) {
                 System.out.println(e.getMessage());
             }
             return nextItem;
