@@ -1,14 +1,24 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * SearchByLyricsWords.java
+ *****************************************************************************
+ *                       revision history
+ *****************************************************************************
+ * 4.2021 - Caleb Tracey & Abdikarim Jimale -
+ *          Collaborated to implement this class and all methods
+ *****************************************************************************
+ * Search By Lyrics Words allows the user to search the database of songs by
+ * individual lyrics
+ *
  */
 package student;
 
 import java.util.Arrays;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.stream.Stream;
+import static java.util.Comparator.comparingInt;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import static java.util.stream.Collectors.toMap;
 
 /**
  *
@@ -20,30 +30,45 @@ public class SearchByLyricsWords {
     private TreeSet<String> commonWordSet;
     private Song[] songs;
     private String commonWordsRaw
-            = " the of and a to in is you that it he for was on "
-            + " are as with his they at be this from I have or "
-            + " by one had not but what all were when we there "
-            + " can an your which their if do will each how them "
-            + " then she many some so these would into has more "
-            + " her two him see could no make than been its now "
-            + " my made did get our me too ";
+            = " the of and a to in is you that it he for was on\n"
+            + " are as with his they at be this from I have or\n"
+            + " by one had not but what all were when we there\n"
+            + " can an your which their if do will each how them\n"
+            + " then she many some so these would into has more\n"
+            + " her two him see could no make than been its now\n"
+            + " my made did get our me too";
 
-    // Constructor
+    /**
+     * Parameterized constructor for SearchByLyricsWords class.
+     *
+     * @param sc the collection of songs.
+     */
     public SearchByLyricsWords(SongCollection sc) {
         songs = sc.getAllSongs();
         buildCommonWordSet(commonWordsRaw);
         buildLyricsWordMap(songs);
     }
 
-    // Break up the string of common words by each word and assign
-    //each to a set
+    /**
+     * Creates a set of individual common words and assigns it to the
+     * commonWordSet variable. Used in buildLyricsSet method for removing common
+     * words from lyrics with set difference.
+     *
+     * @param cwr String of common words
+     */
     private void buildCommonWordSet(String cwr) {
         this.commonWordSet
                 = new TreeSet<>(Arrays.asList(cwr.split("[^a-zA-Z]+")));
     }
 
-    // Used by the buildLyricsWordMap method to create a set of words for 
-    // an individual song
+    /**
+     * Creates a set of individual words from a String of lyrics then removes
+     * any common words. Used by buildLyricsWordMap when creating the map.
+     *
+     * @param lyrics String of lyrics for an individual song.
+     * @return TreeSet of type String of words for lyrics with common words
+     * removed.
+     */
     private TreeSet<String> buildLyricsSet(String lyrics) {
         TreeSet<String> retVal
                 = new TreeSet<>(Arrays.asList(lyrics.split("[^a-zA-Z]+")));
@@ -51,70 +76,124 @@ public class SearchByLyricsWords {
         return retVal;
     }
 
-    // Used by buildLyricsWordMap to create a new set of songs if a new word is
-    // found without a matching song
+    /**
+     * Creates a new set of type Song when buildLyricsWordMap encounters a word
+     * in a song that has not yet been added to the map.
+     *
+     * @param song the Song in which the un-added lyric was found.
+     * @return New TreeSet of type Song with the parameter as the first value.
+     */
     private TreeSet<Song> buildSongSet(Song song) {
         TreeSet<Song> retVal = new TreeSet<>();
         retVal.add(song);
         return retVal;
     }
 
-    // Builds the map of words to a treeset of songs
+    /**
+     * Creates a TreeMap of Strings (words of lyrics) to a TreeSet of Songs
+     * (songs that contain the individual lyric).
+     *
+     * @param songs Array of Songs created from the Song Collection.
+     */
     private void buildLyricsWordMap(Song[] songs) {
         for (Song song : songs) {
             // create a new lyrics set for the song
             TreeSet<String> lyricsSet
                     = buildLyricsSet(song.getLyrics().toLowerCase());
             for (String word : lyricsSet) {
-                if (allLetters(word)) {
-                    // if the word is already a key in the map then get the set of
-                    // songs for it and add the new song
-                    if (word.length() > 1 && lyricsWordMap.containsKey(word)) {
-                        lyricsWordMap.get(word).add(song);
-                        // if not a key then create new set with song and add to map
-                    } else if (word.length() > 1
-                            && !lyricsWordMap.containsKey(word)) {
-                        TreeSet<Song> songSet = buildSongSet(song);
-                        lyricsWordMap.put(word, songSet);
-                    }
+                // if the word is already a key in the map then get the set of
+                // songs for it and add the new song
+                if (word.length() > 1 && lyricsWordMap.containsKey(word)) {
+                    lyricsWordMap.get(word).add(song);
+                    // if not a key then create new set with song and add to map
+                } else if (word.length() > 1
+                        && !lyricsWordMap.containsKey(word)) {
+                    TreeSet<Song> songSet = buildSongSet(song);
+                    lyricsWordMap.put(word, songSet);
                 }
             }
         }
-
     }
 
-    private boolean allLetters(String s) {
-        if (s == null) {
-            return false;
+    private static void top10Words(TreeMap<String, TreeSet> lwm) {
+        // New map to hold the word and the song count value
+        Map<String, Integer> wordCounts = new TreeMap<>();
+        int count = 0;
+
+        // Populate new map with words/ song count
+        for (String key : lwm.keySet()) {
+            wordCounts.put(key, lwm.get(key).size());
         }
-        int len = s.length();
-        for (int i = 0; i < len; i++) {
-            // checks whether the character is not a letter
-            // if it is not a letter ,it will return false
-            if ((Character.isLetter(s.charAt(i)) == false)) {
-                return false;
+
+        // Create a linked hash map from the wordCounts map so they can be 
+        // sorted by value.
+        Map<String, Integer> sorted = wordCounts.entrySet().stream()
+                .sorted(comparingInt(e -> -e.getValue()))
+                .collect(toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (a, b) -> {
+                            throw new AssertionError();
+                        },
+                        LinkedHashMap::new
+                ));
+
+        // Print the first 10 keys and corresponding values from the sorted
+        // linked hash map
+        for (String s : sorted.keySet()) {
+            if (count < 10) {
+                System.out.printf("%-5s %6s\n", s, sorted.get(s));
+                count++;
             }
         }
-        return true;
     }
 
-    private static void statistics(SearchByLyricsWords sblw) {
+    /**
+     * Used by main method for testing purposes
+     *
+     * @param sblw SearchByLyricsWords object
+     */
+    private static void statistics(SearchByLyricsWords sblw, String[] args) {
+        TreeMap<String, TreeSet> lwm = sblw.lyricsWordMap;
         int numKeys = sblw.lyricsWordMap.size();
         int songRefs = 0;
 
-        for (TreeSet<Song> songSet : sblw.lyricsWordMap.values()) {
+        // Add the size of each set of songs for each word to get the total
+        // count of mapped song references
+        for (TreeSet<Song> songSet : lwm.values()) {
             songRefs += songSet.size();
         }
 
+        // Average song references per key
         double avgRefs = (double) songRefs / numKeys;
+        // Average indexing terms to songs
         double avgTTS = (double) songRefs / sblw.songs.length;
-
-        System.out.println("Number of keys in map (K): " + numKeys);
-        System.out.println("Total mapped song references (N): " + songRefs);
-        System.out.printf("average song refs per key: %.3f\n", avgRefs);
-        System.out.printf("average indexing terms/song: %.3f\n", avgTTS);
+        // Space used by map
+        double totalMapSpace = (double) numKeys * avgRefs;
+        // Space used by map
+        double totalSetSpace = (double) numKeys * avgRefs;
+        double tots = (double) avgTTS * sblw.songs.length * numKeys;
+        double asdasd = (double) avgTTS * avgRefs * songRefs;
+        // Total space used
+        double totalCompoundSpace = (double) totalMapSpace * totalSetSpace;
+        double x = (double) totalCompoundSpace / songRefs;
+        System.out.printf("Number of keys in map(K):    %-1d\n", numKeys);
+        System.out.printf("Total mapped song refs(N):   %-1d\n", songRefs);
+        System.out.printf("Average song refs per key:   %-1.3f\n", avgRefs);
+        System.out.printf("Average indexing terms/song: %-1.3f\n", avgTTS);
+        if (args.length > 1 && args[1].equals("-top10words")) {
+            System.out.println("\n(EC) 10 most used words:");
+            System.out.println("------------------------");
+            System.out.println("Word:   Count:");
+            top10Words(sblw.lyricsWordMap);
+        }
     }
 
+    /**
+     * main method used for testing purposes only
+     *
+     * @param args AllSongs file
+     */
     public static void main(String[] args) {
         if (args.length == 0) {
             System.err.println("usage: prog songfile [search string]");
@@ -122,11 +201,6 @@ public class SearchByLyricsWords {
         }
         SongCollection sc = new SongCollection(args[0]);
         SearchByLyricsWords sblw = new SearchByLyricsWords(sc);
-        statistics(sblw);
-
-        if (args.length > 1) {
-            System.out.println("searching for: " + args[1] + "\n");
-        }
+        statistics(sblw, args);
     }
-
 }
