@@ -168,15 +168,7 @@ public class SearchByLyricsWords {
         double avgRefs = (double) songRefs / numKeys;
         // Average indexing terms to songs
         double avgTTS = (double) songRefs / sblw.songs.length;
-        // Space used by map
-        double totalMapSpace = (double) numKeys * avgRefs;
-        // Space used by map
-        double totalSetSpace = (double) numKeys * avgRefs;
-        double tots = (double) avgTTS * sblw.songs.length * numKeys;
-        double asdasd = (double) avgTTS * avgRefs * songRefs;
-        // Total space used
-        double totalCompoundSpace = (double) totalMapSpace * totalSetSpace;
-        double x = (double) totalCompoundSpace / songRefs;
+
         System.out.printf("Number of keys in map(K):    %-1d\n", numKeys);
         System.out.printf("Total mapped song refs(N):   %-1d\n", songRefs);
         System.out.printf("Average song refs per key:   %-1.3f\n", avgRefs);
