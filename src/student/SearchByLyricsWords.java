@@ -3,6 +3,8 @@
  *****************************************************************************
  *                       revision history
  *****************************************************************************
+ * 4.2021 - Caleb Tracey - implemented the search method and added testing to 
+ *          main()
  * 4.2021 - Caleb Tracey & Abdikarim Jimale -
  *          Collaborated to implement this class and all methods
  *****************************************************************************
@@ -19,6 +21,7 @@ import static java.util.Comparator.comparingInt;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import static java.util.stream.Collectors.toMap;
+import java.util.stream.Stream;
 
 /**
  *
@@ -114,17 +117,53 @@ public class SearchByLyricsWords {
             }
         }
     }
+    
+    /**
+     * Searches the lyricsWordMap to find all songs that contain all the words 
+     * that are being searched for. This method uses set intersection to quickly
+     * find the results within the map.
+     *  
+     * @param lyricsWords the large string of words being searched for
+     * @return an array of type Song containing every song that contains all the
+     * relevant search terms.
+     */
+    public Song[] search(String lyricsWords) {
+        TreeSet<String> searchSet = buildLyricsSet(lyricsWords.toLowerCase());
+        TreeSet<Song> lyricSongs = new TreeSet<>(); // needed for intersection
+        
+        // build map and use set intersection to retain only the relevant keys
+        buildLyricsWordMap(songs);
+        this.lyricsWordMap.keySet().retainAll(searchSet);
+        
+        if (!this.lyricsWordMap.keySet().isEmpty()){
+            // if theres a match then add all songs for the remaining key(s) 
+            // into the lyricSongs set. Also remove this key from the map.
+            lyricSongs.addAll(this.lyricsWordMap.pollFirstEntry().getValue());
+        }
+        // iterate through any other remaining keys and use set intersection to
+        // retain only the songs that include all previous terms as well.
+        this.lyricsWordMap.values().forEach((songSet) -> {
+            lyricSongs.retainAll(songSet);
+        });
+        // create new array of type Song for the return value and add all songs 
+        // in the lyricSongs array to it.
+        Song[] retVal = new Song[lyricSongs.size()];
+        int i = 0;
+        for (Song song : lyricSongs){
+            retVal[i++] = song;
+        }
+        
+        return retVal;
+    }
 
     private static void top10Words(TreeMap<String, TreeSet> lwm) {
         // New map to hold the word and the song count value
         Map<String, Integer> wordCounts = new TreeMap<>();
         int count = 0;
-
         // Populate new map with words/ song count
         for (String key : lwm.keySet()) {
             wordCounts.put(key, lwm.get(key).size());
         }
-
         // Create a linked hash map from the wordCounts map so they can be 
         // sorted by value.
         Map<String, Integer> sorted = wordCounts.entrySet().stream()
@@ -137,7 +176,6 @@ public class SearchByLyricsWords {
                         },
                         LinkedHashMap::new
                 ));
-
         // Print the first 10 keys and corresponding values from the sorted
         // linked hash map
         for (String s : sorted.keySet()) {
@@ -157,18 +195,15 @@ public class SearchByLyricsWords {
         TreeMap<String, TreeSet> lwm = sblw.lyricsWordMap;
         int numKeys = sblw.lyricsWordMap.size();
         int songRefs = 0;
-
         // Add the size of each set of songs for each word to get the total
         // count of mapped song references
         for (TreeSet<Song> songSet : lwm.values()) {
             songRefs += songSet.size();
         }
-
         // Average song references per key
         double avgRefs = (double) songRefs / numKeys;
         // Average indexing terms to songs
         double avgTTS = (double) songRefs / sblw.songs.length;
-
         System.out.printf("Number of keys in map(K):    %-1d\n", numKeys);
         System.out.printf("Total mapped song refs(N):   %-1d\n", songRefs);
         System.out.printf("Average song refs per key:   %-1.3f\n", avgRefs);
@@ -193,6 +228,17 @@ public class SearchByLyricsWords {
         }
         SongCollection sc = new SongCollection(args[0]);
         SearchByLyricsWords sblw = new SearchByLyricsWords(sc);
-        statistics(sblw, args);
+        //statistics(sblw, args);
+        
+        // *** Part 8 Testing ***
+        if (args.length > 1 && !args[1].equals("-top10words")) {
+            String lyricWords = args[1];
+
+            Song[] res = sblw.search(lyricWords);
+            System.out.printf("Search Terms: \"%s\"\n", lyricWords);
+            System.out.printf("Total Matches: %d\n", res.length);
+            System.out.println("--------------------------------------------");
+            Stream.of(res).limit(10).forEach(System.out::println);
+        }
     }
 }
