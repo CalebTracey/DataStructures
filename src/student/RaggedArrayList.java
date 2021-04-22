@@ -403,8 +403,11 @@ public class RaggedArrayList<E> implements Iterable<E> {
          * check if more items
          */
         public boolean hasNext() {
-            L2Array l2 = (L2Array) l1Array[loc.level1Index];
-            return l2.items[loc.level2Index] != null;
+            return (loc.level2Index < 
+                    ((L2Array)(l1Array[loc.level1Index])).numUsed 
+                    || loc.level1Index < l1NumUsed-1);
+//            L2Array l2 = (L2Array) l1Array[loc.level1Index];
+//            return l2.items[loc.level2Index] != null;
         }
 
         /**

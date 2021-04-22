@@ -130,19 +130,19 @@ public class SearchByLyricsWords {
     public Song[] search(String lyricsWords) {
         TreeSet<String> searchSet = buildLyricsSet(lyricsWords.toLowerCase());
         TreeSet<Song> lyricSongs = new TreeSet<>(); // needed for intersection
-        
+        TreeMap<String, TreeSet> lyricsWordMapCopy = new TreeMap<>();
         // build map and use set intersection to retain only the relevant keys
-        buildLyricsWordMap(songs);
-        this.lyricsWordMap.keySet().retainAll(searchSet);
+        lyricsWordMapCopy.putAll(this.lyricsWordMap);
+        lyricsWordMapCopy.keySet().retainAll(searchSet);
         
-        if (!this.lyricsWordMap.keySet().isEmpty()){
+        if (!lyricsWordMapCopy.keySet().isEmpty()){
             // if theres a match then add all songs for the remaining key(s) 
             // into the lyricSongs set. Also remove this key from the map.
-            lyricSongs.addAll(this.lyricsWordMap.pollFirstEntry().getValue());
+            lyricSongs.addAll(lyricsWordMapCopy.pollFirstEntry().getValue());
         }
         // iterate through any other remaining keys and use set intersection to
         // retain only the songs that include all previous terms as well.
-        this.lyricsWordMap.values().forEach((songSet) -> {
+        lyricsWordMapCopy.values().forEach((songSet) -> {
             lyricSongs.retainAll(songSet);
         });
         // create new array of type Song for the return value and add all songs 
