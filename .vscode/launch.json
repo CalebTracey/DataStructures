@@ -1,0 +1,72 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "type": "java",
+            "name": "Launch SearchByLyricsPhrase",
+            "request": "launch",
+            "mainClass": "student.SearchByLyricsPhrase",
+            "projectName": "Project290_98e65feb",
+            "args": ["/Users/calebtracey/Desktop/CSCI290Projects/allSongs.txt", "she loves you"]
+        },
+        {
+            "type": "java",
+            "name": "Launch Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Launch PhraseRanking",
+            "request": "launch",
+            "mainClass": "student.PhraseRanking",
+            "projectName": "Project290_98e65feb"
+        },
+        {
+            "type": "java",
+            "name": "Launch RALtester3",
+            "request": "launch",
+            "mainClass": "student.RALtester3",
+            "projectName": "Project290_98e65feb"
+        },
+        {
+            "type": "java",
+            "name": "Launch SearchByArtistPrefix",
+            "request": "launch",
+            "mainClass": "student.SearchByArtistPrefix",
+            "projectName": "Project290_98e65feb"
+        },
+        {
+            "type": "java",
+            "name": "Launch SearchByLyricsWords",
+            "request": "launch",
+            "mainClass": "student.SearchByLyricsWords",
+            "projectName": "Project290_98e65feb"
+        },
+        {
+            "type": "java",
+            "name": "Launch SearchByTitlePrefix",
+            "request": "launch",
+            "mainClass": "student.SearchByTitlePrefix",
+            "projectName": "Project290_98e65feb"
+        },
+        {
+            "type": "java",
+            "name": "Launch Song",
+            "request": "launch",
+            "mainClass": "student.Song",
+            "projectName": "Project290_98e65feb"
+        },
+        {
+            "type": "java",
+            "name": "Launch SongCollection",
+            "request": "launch",
+            "mainClass": "student.SongCollection",
+            "projectName": "Project290_98e65feb"
+        }
+    ]
+}

@@ -21,6 +21,7 @@ import java.util.TreeMap;
  */
 public class PhraseRanking {
 
+
     static int findExactWord(String word, int pos, String lyrics) {
         int wordStart = lyrics.indexOf(word, pos);
         if (wordStart == -1) {

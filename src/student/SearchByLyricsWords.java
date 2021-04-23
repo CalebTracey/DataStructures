@@ -52,6 +52,8 @@ public class SearchByLyricsWords {
         buildLyricsWordMap(songs);
     }
 
+
+
     /**
      * Creates a set of individual common words and assigns it to the
      * commonWordSet variable. Used in buildLyricsSet method for removing common
@@ -228,6 +230,8 @@ public class SearchByLyricsWords {
         }
         SongCollection sc = new SongCollection(args[0]);
         SearchByLyricsWords sblw = new SearchByLyricsWords(sc);
+        
+
         //statistics(sblw, args);
         
         // *** Part 8 Testing ***
