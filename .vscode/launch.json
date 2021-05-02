@@ -11,7 +11,7 @@
             "request": "launch",
             "mainClass": "student.SearchByLyricsPhrase",
             "projectName": "Project290_98e65feb",
-            "args": ["/Users/calebtracey/Desktop/CSCI290Projects/allSongs.txt", "she loves you"]
+            "args": ["/Users/calebtracey/Desktop/CSCI290Projects/allSongs.txt", "love love love"]
         },
         {
             "type": "java",
